@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""FIFO Caching sytem module."""
+"""lIFO Caching sytem module."""
 
 from collections import OrderedDict
 BaseCaching = __import__('base_caching').BaseCaching
 
 
-class FIFOCache(BaseCaching):
-    """A class representing a FIFO caching system."""
+class LIFOCache(BaseCaching):
+    """A class representing a LIFO caching system."""
 
     def put(self, key, item):
         """
@@ -19,9 +19,7 @@ class FIFOCache(BaseCaching):
         if key and item:
             if len(self.cache_data) >= self.MAX_ITEMS:
                 if key not in self.cache_data.keys():
-                    ordered_dict = OrderedDict({**self.cache_data})
-                    discard_key = next(iter(ordered_dict))
-                    del self.cache_data[discard_key]
+                    discard_key, _ = self.cache_data.popitem()
                     print(f"DISCARD: {discard_key}")
             self.cache_data[key] = item
 
