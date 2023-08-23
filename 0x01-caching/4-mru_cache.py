@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""LRU Caching sytem module."""
+"""MRU Caching sytem module."""
 
 
 BaseCaching = __import__('base_caching').BaseCaching
 
 
-class LRUCache(BaseCaching):
-    """A class representing a least recently used caching system."""
+class MRUCache(BaseCaching):
+    """A class representing a most recently used caching system."""
 
     def __init__(self):
         """Initialize a LRUCache instance."""
         super().__init__()
-        self.LRU_list = []
+        self.MRU_list = []
 
     def put(self, key, item):
         """
@@ -22,13 +22,13 @@ class LRUCache(BaseCaching):
             value: the value to be assigned to the key
         """
         if key and item:
-            if key in self.LRU_list:
-                self.LRU_list.remove(key)
-            self.LRU_list.append(key)
+            if key in self.MRU_list:
+                self.MRU_list.remove(key)
+            self.MRU_list.append(key)
             self.cache_data[key] = item
         if len(self.cache_data) > self.MAX_ITEMS:
-            discard_key = self.LRU_list[0]
-            self.LRU_list.remove(discard_key)
+            discard_idx = len(self.MRU_list) - 2
+            discard_key = self.MRU_list.pop(discard_idx)
             del self.cache_data[discard_key]
             print(f"DISCARD: {discard_key}")
 
@@ -45,7 +45,7 @@ class LRUCache(BaseCaching):
         value = self.cache_data.get(key)
         if not key or not value:
             return None
-        if key in self.LRU_list:
-            self.LRU_list.remove(key)
-        self.LRU_list.append(key)
+        if key in self.MRU_list:
+            self.MRU_list.remove(key)
+        self.MRU_list.append(key)
         return value
