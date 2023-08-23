@@ -32,6 +32,8 @@ class LFUCache(BaseCaching):
                 sorted_list = sorted(self.LFU_dict.items(),
                                      key=lambda item: item[1])
                 discard_key, _ = sorted_list[0]
+                if discard_key == key:
+                    discard_key, _ = sorted_list[1]
                 del self.LFU_dict[discard_key]
                 del self.cache_data[discard_key]
                 print(f"DISCARD: {discard_key}")
