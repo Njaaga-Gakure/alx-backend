@@ -6,6 +6,7 @@ from flask import Flask, render_template, request, g
 from flask_babel import Babel
 from pytz import timezone
 from pytz.exceptions import UnknownTimeZoneError
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -58,32 +59,35 @@ def get_locale():
 @babel.timezoneselector
 def get_timezone():
     """Infer appropriate timezone."""
-    url_tz = request.args.get('timezone')
+    url_tz = request.args.get('timezone', None)
     if url_tz:
         try:
             timezone(url_tz)
             return url_tz
         except UnknownTimeZoneError:
             return app.config['BABEL_DEFAULT_TIMEZONE']
-    elif g.user:
+    if g.user:
+        user_tz = g.user['timezone']
         try:
-            timezone(g.user.get('timezone'))
+            timezone(user_tz)
+            return user_tz
         except UnknownTimeZoneError:
             return app.config['BABEL_DEFAULT_TIMEZONE']
-    else:
-        return app.config['BABEL_DEFAULT_TIMEZONE']
-
+    return app.config['BABEL_DEFAULT_TIMEZONE']
 
 @app.before_request
 def before_request():
     """Set user attribute in the global object."""
     g.user = get_user()
+    current_time = datetime.now(timezone(get_timezone()))
+    time_format = "%b %d, %Y %I:%M:%S %p"
+    g.timezone = current_time.strftime(time_format)
 
 
 @app.route('/')
 def home():
     """Render a html template."""
-    return render_template('6-index.html')
+    return render_template('index.html')
 
 
 if __name__ == '__main__':
